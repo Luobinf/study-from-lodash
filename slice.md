@@ -38,7 +38,7 @@ for(let key in dense) {
 
 ## slice源码解析
 
-`slice` 方法 与 `Array.prototype.slice` 的规则一样，除了 `slice` 方法使用密集数组来对待数组，`原生 slice` 使用稀疏数组方式来对待数组。
+`slice` 方法 与 `Array.prototype.slice` 的规则一样。除了`slice` 方法将数组看成密集数组，`Array.prototype.slice` 将数组看成稀疏数组。
 
 MDN中对原生 slice 方法的描述：
 > Array.prototype.slice
@@ -114,15 +114,15 @@ export default slice
 
 **当 array 不传递或为 null 或 undefiend 时，length 计算出来为0。**
 
-**那么当array是number、string、boolean、symbol、object（包括array、function等）时为什么取array.length时不报错？**
+**那么当 array 是number、string、boolean、symbol、object（包括array、function等）时为什么 `array.length` 时不报错？**
 
 **基本数据类型 number、string、boolean、symbol，在一定的条件下会被自动转化为对象，也就是原始类型的`"包装对象"`，使得基本类型可以调用一些方法和获取属性。**
 
-1.1.1 当入参 array 为 number 时， array.length 为undefiend， slice方法直接返回空数组。
-1.1.2 当入参 array 为 string 时， array.length 则字符数。
-1.1.3  当入参 array 为 string 时，array.length 为undefiend， slice方法直接返回空数组。
-1.1.4 当入参 array 为 symbol 时，array.length 为undefiend， slice方法直接返回空数组。
-1.1.4  当入参 array 为 Object 时，array.length 则需要分别看待了，若对象类型是function时，array.length 为 0， slice方法直接返回空数组；若为其它类型（Date、RegExp等）时，则为undefined，slice方法也直接返回空数组。
+- 1.1.1 当入参 array 为 number 时， array.length 为undefiend， slice方法直接返回空数组。
+- 1.1.2 当入参 array 为 string 时， array.length 则字符数。
+- 1.1.3  当入参 array 为 string 时，array.length 为undefiend， slice方法直接返回空数组。
+- 1.1.4 当入参 array 为 symbol 时，array.length 为undefiend， slice方法直接返回空数组。
+- 1.1.4  当入参 array 为 Object 时，array.length 则需要分别看待了，若对象类型是function时，array.length 为 0， slice方法直接返回空数组；若为其它类型（Date、RegExp等）时，则为undefined，slice方法也直接返回空数组。
 
 
 ### 2. 继续往下解析, 处理 start 、end 参数
