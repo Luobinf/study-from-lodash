@@ -222,9 +222,9 @@ lodash中 slice有两处地方使用了 >>> 。
 start >>>= 0
 ```
 
-**使用的目的是为了当 start 、end 参数无意义时，用于确保 start 或 (end - start) 为 0，也使得后续使用while循环时不报错。**
+`**使用的目的是为了当 start 、end 参数无意义时，用于确保 start 或 (end - start) 为 0，也使得后续使用while循环时不报错。**`
 
-当 start 或 end 为 function(){}等时， 
+当 `start` 或 `end` 为 ```function(){ }``` 等时， 
 
 ```JS
 start = function() {}
