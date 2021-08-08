@@ -11,7 +11,7 @@ var objectProto = Object.prototype;
 var nativeObjectToString = objectProto.toString;
 var  symToStringTag = Symbol ? Symbol.toStringTag : undefined;
 var argsTag = '[object Arguments]'
-var spreadableSymbol = Symbol ? Symbol.isConcatSpreadable : undefined
+var spreadableSymbol = Symbol ? Symbol.isConcatSpreadable : undefined    //  Symbol.isConcatSpreadable 符号用于配置某对象作为Array.prototype.concat()方法的参数时是否展开其数组元素。
 
 /**
 * Copies the values of `source` to `array`.
@@ -280,29 +280,35 @@ function concat() {
 
 
 // baseFlatten改写
-function baseFlatten(array, depth, predicate, result) {
-  let index = -1,
-      length = array.length
-  result || ( result = [] )  //结果数组
-  predicate || ( predicate = isFlattenable)
+// function baseFlatten(array, depth, predicate, result) {
+//   let index = -1,
+//       length = array.length
+//   result || ( result = [] )  //结果数组
+//   predicate || ( predicate = isFlattenable)
 
-  while(++index < length) {
-    let value = array[index]
-    if(depth > 0 && predicate(value) ) {
-      if(depth === 1) {
-        for(let i = 0; i < value.length;i++) {
-          result[result.length] = value[i]
-        }
-      } else {
-        baseFlatten(value, depth - 1, predicate, result)
-      }
-    } else {
-      result[result.length] = value
-    }
-  }
-  return result
-}
+//   while(++index < length) {
+//     let value = array[index]
+//     if(depth > 0 && predicate(value) ) {
+//       if(depth === 1) {
+//         for(let i = 0; i < value.length;i++) {
+//           result[result.length] = value[i]
+//         }
+//       } else {
+//         baseFlatten(value, depth - 1, predicate, result)
+//       }
+//     } else {
+//       result[result.length] = value
+//     }
+//   }
+//   return result
+// }
 
 console.log( baseFlatten([1, [20,30]]) )      // 返回原数组
 console.log( baseFlatten([ 1, [ 20,30, [50,100] ] ], 1) )      // 返回 [1, 20, 30]
 console.log( baseFlatten([ 1, [ 20,30, [50,100] ] ], 2) )
+
+
+// Symbol.isConcatSpreadable符号用于配置某对象作为Array.prototype.concat()方法的参数时是否展开其数组元素。
+var test = { 0: 'name', 1: 'age', length: 2 }
+test[Symbol.isConcatSpreadable] = true
+console.log( baseFlatten([ 1, test], 1) )
