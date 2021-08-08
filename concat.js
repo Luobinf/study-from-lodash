@@ -1,10 +1,17 @@
 
+// var context = context == null // ? root : _.defaults(root.Object(), context, _.pick(root, contextProps));
+
+/** Built-in constructor references. */
+
+
+var Array = global.Array
+var Symbol = global.Symbol
 var isArray = Array.isArray;
 var objectProto = Object.prototype;
 var nativeObjectToString = objectProto.toString;
 var  symToStringTag = Symbol ? Symbol.toStringTag : undefined;
-var argsTag = '[object Arguments]',
-
+var argsTag = '[object Arguments]'
+var spreadableSymbol = Symbol ? Symbol.isConcatSpreadable : undefined
 
 /**
 * Copies the values of `source` to `array`.
@@ -33,10 +40,13 @@ function copyArray(source, array) {
  * @param {*} value The value to check.
  * @returns {boolean} Returns `true` if `value` is flattenable, else `false`.
  */
+// 检查 value 是否是一个可以拍平的参数对象或数组, 先通过 isArray 判断是否是一个数组，然后再通过 isArguments 去判断。
 function isFlattenable(value) {
   return isArray(value) || isArguments(value) ||
     !!(spreadableSymbol && value && value[spreadableSymbol]);
 }
+
+// Symbol ? Symbol.isConcatSpreadable : undefined
 
 /**
  * Checks if `value` is likely an `arguments` object.
@@ -56,6 +66,8 @@ function isFlattenable(value) {
  * _.isArguments([1, 2, 3]);
  * // => false
  */
+
+// 检查 value 是否是一个类 arguments 对象
 var isArguments = baseIsArguments(function () { return arguments; }()) ? baseIsArguments : function (value) {
   return isObjectLike(value) && hasOwnProperty.call(value, 'callee') &&
     !propertyIsEnumerable.call(value, 'callee');
@@ -107,6 +119,11 @@ function baseIsArguments(value) {
  * @param {*} value The value to query.
  * @returns {string} Returns the `toStringTag`.
  */
+
+ /** `Object#toString` result references. */
+var undefinedTag = '[object Undefined]',
+    nullTag = '[object Null]'
+                                                                                                                                                                                 
 function baseGetTag(value) {
   if (value == null) {
     return value === undefined ? undefinedTag : nullTag;
@@ -159,7 +176,7 @@ function objectToString(value) {
  * @private
  * @param {Array} array The array to flatten.
  * @param {number} depth The maximum recursion depth.
- * @param {boolean} [predicate=isFlattenable] The function invoked per iteration.
+ * @param {boolean} [predicate=isFlattenable] The function invoked per iteration.  //每次迭代被调用的函数
  * @param {boolean} [isStrict] Restrict to values that pass `predicate` checks.
  * @param {Array} [result=[]] The initial result value.
  * @returns {Array} Returns the new flattened array.
@@ -245,8 +262,47 @@ function concat() {
   while (index--) {
     args[index - 1] = arguments[index];
   }
-  console.log(args);
+  console.log(args);                                                               
   return arrayPush(isArray(array) ? copyArray(array) : [array], baseFlatten(args, 1));
 }
 
-concat([10], 2, [3], [[4]]);
+// console.log( concat() )  //返回空数组
+// console.log( concat([10], 2, [3], [[4]]) )
+
+
+// var result = baseFlatten([1, [20,30,40, [150]]], 2)
+// console.log(result)
+// console.log( isFlattenable(3) )
+// console.log(　concat([1,2], [3, [4,5]]) )　
+
+
+// baseFlatten、isFlattenable、arrayPush 这几个函数比较重要，仔细看看
+
+
+// baseFlatten改写
+function baseFlatten(array, depth, predicate, result) {
+  let index = -1,
+      length = array.length
+  result || ( result = [] )  //结果数组
+  predicate || ( predicate = isFlattenable)
+
+  while(++index < length) {
+    let value = array[index]
+    if(depth > 0 && predicate(value) ) {
+      if(depth === 1) {
+        for(let i = 0; i < value.length;i++) {
+          result[result.length] = value[i]
+        }
+      } else {
+        baseFlatten(value, depth - 1, predicate, result)
+      }
+    } else {
+      result[result.length] = value
+    }
+  }
+  return result
+}
+
+console.log( baseFlatten([1, [20,30]]) )      // 返回原数组
+console.log( baseFlatten([ 1, [ 20,30, [50,100] ] ], 1) )      // 返回 [1, 20, 30]
+console.log( baseFlatten([ 1, [ 20,30, [50,100] ] ], 2) )
